@@ -1,48 +1,47 @@
-# 🎞️ Product Demand & Inventory Analysis for a Multi-Store Rental Business
+# 🎞️ Product Demand & Inventory Analysis for a Multi Store Rental Business
 
 ![movie1](https://github.com/user-attachments/assets/2fb575c5-2957-41b5-a2b9-337ee91fc36d)
 
 **Project Overview:**
-This project analyzes rental operations and inventory demand for a multi-store DVD rental company using SQL.
+Created by **Mike Hillyer in 2005**, the Sakila Sample Database is a standardized relational dataset for SQL practice.
 
-Using the Sakila Sample Database, created by MySQL, the analysis evaluates customer behavior, product demand, inventory utilization, and store-level revenue performance.
+- Customer behavior
+- Product demand
+- Inventory utilization
+- Store-level revenue performance
 
-The goal is to demonstrate how SQL can be used to generate business insights that support inventory planning, demand analysis, and revenue monitoring.
+The goal is to demonstrate how SQL can be used to generate **business insights that support inventory planning, demand analysis and revenue monitoring.**
 
 ### 🧩 Business Problem
 
-A multi-store rental business needs visibility into operational performance, including:
+A multi store rental business needs visibility into operational performance
 
-• Which movie genres generate the most revenue
-• Which customers drive the most rentals
-• How often customers rent movies
-• How efficiently inventory is utilized
-• Whether rental durations impact inventory availability
-• How revenue is distributed across stores
+- Which movie genres generate the most revenue
+- Which customers drive the most rentals
+- How often customers rent movies
+- Whether rental durations impact inventory availability
+- How revenue is distributed across stores
 
 Without structured analysis, these operational insights remain hidden within multiple relational tables.
 
-### 🎯Project Objective
+### 🎯 Project Objective
 
-Use SQL to analyze rental transactions and uncover insights about:
+Utilizing SQL to analyze rental transactions and uncover insights
 
-• Revenue contribution by movie genre
-• Customer lifetime value
-• Rental frequency and customer engagement
-• Late return patterns affecting inventory availability
-• Inventory utilization across films
-• Store-level revenue performance
+- Revenue contribution by movie genre
+- Customer lifetime value
+- Rental frequency and customer engagement
+- Late return patterns affecting inventory availability
+- Inventory utilization across films
+- Store-level revenue performance
 
 ## 📊 Dataset
 
-The project uses the Sakila Sample Database, a relational dataset designed to simulate a DVD rental business.
-
 Dataset Source: [MySQL Sakila Sample Database](https://github.com/jOOQ/sakila) 
 
-Approximate dataset size:
-
-• 50,000+ rental and payment records
-• Handling 16+ relational tables representing customers, inventory, films, and stores
+Dataset **Size**:
+- **50,000+** rental and payment records
+- Handling **16+ relational tables** representing customers, inventory, films, and stores
 
 <img width="799" height="521" alt="Sakila - ERD" src="https://github.com/user-attachments/assets/4ffc3c2f-1090-4a1a-88f1-1b94ca97054d" />
 
@@ -52,13 +51,13 @@ Approximate dataset size:
 
 | Table | Business Meaning |
 |------|------------------|
-| Film | Product catalog |
-| Inventory | Warehose |
-| store | Distribution |
-| category | Movie genres |
+| Films | Product catalog |
+| Inventory | Stock |
+| Store | Distribution |
+| Category | Movie genres |
 | Rental | Customer transactions |
-| payment | Revenue transactions |
-| customer | Customer profiles |
+| Payment | Revenue transactions |
+| Customer | Customer profiles |
 
 ---
 
@@ -69,7 +68,7 @@ Approximate dataset size:
 ### Business Question
 Which movie genres generate the highest revenue?
 
-### Metric Used
+### Metric Utilized
 `SUM(payment.amount) AS total_revenue`
 
 ### SQL Query
@@ -93,9 +92,16 @@ GROUP BY c.name
 ORDER BY total_revenue DESC;
 ```
 
-### Insight
+|Output|(Top Genres)|
+|------|------------------|
+|Genre | Total Revenue |
+|Sports	| 5314 |
+|Sci-Fi | 4756 |
+|Animation | 4656 |
 
-Certain genres contribute a larger share of total revenue, indicating stronger customer demand patterns.
+**Insight**
+
+The **Sports genre** generated the highest revenue **($5.3K)** followed by **Sci-Fi ($4.7K)** indicating stronger demand for these categories and suggesting higher inventory allocation for these genres.
 
 ---
 
@@ -122,10 +128,15 @@ GROUP BY c.customer_id, c.first_name, c.last_name
 ORDER BY customer_lifetime_value DESC;
 ```
 
-### Insight
+|Output | (Top Customers) |
+|------|------------------|
+|Customer |	CLV |
+|Eleanor Hunt	|211|
+|Karl Seal	|208|
+|Clara Shaw	|205|
 
-A small group of customers contributes a significant portion of the overall revenue, highlighting the importance of customer retention strategies.
-
+**Insight**
+- The **top 3** customers generated over **$200 in lifetime revenue**, highlighting a small group of high-value customers driving significant recurring revenue.
 ---
 
 ## 3️⃣ Rental Frequency Analysis
@@ -147,16 +158,16 @@ GROUP BY customer_id
 ORDER BY total_rentals DESC;
 ```
 
-### Customer Segments
+Output
+|Customer ID|	Total Rentals|
+|------|------------------|
+|148	| 46|
+|526	|45|
+|236 |	42|
 
-- Frequent renters  
-- Occasional renters  
-- One-time renters  
+**Insight**
 
-### Insight
-
-Frequent renters represent the most engaged customers and contribute significantly to total rental activity.
-
+- The **3 most active customers** rented **40+ movies**, showing that a small segment of users contributes disproportionately to rental activity.
 ---
 
 ## 4️⃣ Late Return Analysis
@@ -177,42 +188,20 @@ SELECT
 FROM rental;
 ```
 
-### Insight
+Output (Sample)
+|Rental ID	| Customer |	Rental Duration|
+|------|------------------|-------|
+|1023 |	45	|5 days
+|2045| 	122	|6 days
+|3156	|98	|4 days
 
-Longer rental durations reduce inventory availability and slow down product circulation.
+**Insight**
 
----
-
-## 5️⃣ Inventory Utilization
-
-### Business Question
-Which movies are rented the most?
-
-### Metric Used
-`COUNT(r.rental_id) AS rental_count`
-
-### SQL Query
-
-```sql
-SELECT 
-    f.title,
-    COUNT(r.rental_id) AS rental_count
-FROM film f
-JOIN inventory i
-    ON f.film_id = i.film_id
-JOIN rental r
-    ON i.inventory_id = r.inventory_id
-GROUP BY f.title
-ORDER BY rental_count DESC;
-```
-
-### Insight
-
-A small number of films account for a large share of rentals, indicating concentrated product demand.
+Most **rentals last 4–6 days**, meaning inventory remains **unavailable during this period**, impacting product circulation.
 
 ---
 
-## 6️⃣ Revenue by Store
+## 5️⃣ Revenue by Store
 
 ### Business Question
 How does revenue differ between store locations?
@@ -235,10 +224,15 @@ GROUP BY s.store_id
 ORDER BY total_revenue DESC;
 ```
 
-### Insight
+Output
+|Store	|Revenue|
+|------|------------------|
+|Store 1	|33,902|
+|Store 2	|33,079|
 
-Revenue varies across store locations, suggesting differences in local customer demand.
+**Insight**
 
+- **2 stores generated** similar **revenue (~$33K)**, indicating balanced demand and comparable store performance.
 ---
 
 # 📊 Dashboard Visualization
@@ -249,9 +243,10 @@ A **Power BI dashboard** was built to visualize key operational metrics includin
 - Customer lifetime value distribution  
 - Rental frequency trends  
 - Inventory utilization  
-- Store revenue comparison  
+- Store revenue comparison
 
-Dashboard images are available in the **Visuals** folder.
+<img width="788" height="446" alt="image" src="https://github.com/user-attachments/assets/8ec4f433-cc0c-421f-955c-7cbe037865f0" />
+
 
 ---
 
@@ -263,20 +258,19 @@ Movie-Rental-Inventory-Analytics-SQL
 ├── Data
 │   └── rental_records.csv
 │
+├── ER_Diagram
+│   └── Sakila_ERD.png
+|
 ├── SQL_Queries
 │   ├── 01_revenue_by_genre.sql
 │   ├── 02_customer_lifetime_value.sql
 │   ├── 03_rental_frequency.sql
 │   ├── 04_late_return_analysis.sql
-│   ├── 05_inventory_utilization.sql
-│   └── 06_revenue_by_store.sql
+│   ├── 05_revenue_by_store.sql
 │
 ├── Visuals
 │   ├── demand_by_genre_chart.png
 │   └── rental_dashboard.png
-│
-├── ER_Diagram
-│   └── Sakila_ERD.png
 │
 ├── README.md
 └── .gitignore
@@ -297,8 +291,7 @@ Movie-Rental-Inventory-Analytics-SQL
 
 - Advanced SQL joins across multiple tables  
 - Business metric calculations using aggregations  
-- Customer analytics and segmentation  
-- Inventory utilization analysis  
+- Customer analytics and segmentation   
 - Revenue performance analysis  
 - Data storytelling using analytical insights  
 
@@ -313,5 +306,4 @@ Data Analyst | SQL | Power BI | Business Analytics
 🔗 LinkedIn: https://www.linkedin.com/in/saiarvindofficial/  
 💻 GitHub: https://github.com/Sai-Arvind  
 
-⭐ If you found this project useful, consider giving it a **star**.
-What this fixes
+⭐ If you found this project useful, consider giving it a star.
