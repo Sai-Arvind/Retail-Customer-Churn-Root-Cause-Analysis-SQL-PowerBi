@@ -1,5 +1,7 @@
-# Retail Store Movie Business
-- **Industry:** Rental & Subscription Retail
+# Retail Store Movie Business Analysis
+
+- **Industry:** Rental & Subscription Retail (Netflix DVD Era Simulation)
+
 - "Which of the Top 3 categories Driving 57% of Revenue", **Product Demand** and **Inventory Optimization** using Customer & Store Insights.
 <img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/c8759eac-a1d2-4239-afee-1dc7f47237b2" />
 
@@ -7,11 +9,11 @@
 
 ### ⚡ Executive Summary
 
-1. This project simulates a Netflix (2005-era DVD Operations) & Rent the Runway.
-- Business Health
-- Operations Inventory Utilization & store level performance
-- supply: customer behaviour analysis 
-2. Genres like Sports, Sci-Fi, and Animation account for a massive 57% of revenue, while the Rental Frequency shows a huge bulk of "Regular" and "Elite" users.
+1. This project simulates a 2005-era DVD rental business (Netflix / Rent-the-Runway style model) where
+ - Physical Inventory
+ - Customer Loyalty
+ - Return Behavior directly impact revenue and availability.
+2. Genres like "X, Y, Z"  account for a massive 57% of revenue, while the Rental Frequency shows a huge bulk of "Regular" and "Elite" users.
 3. If you lost the "x" inventory, the "Elite VIP" tier (people renting 40+ times) would likely collapse.
 
 
@@ -52,19 +54,20 @@ To build a scalable analytics framework that:
 ---
 
 
-### 📊 Dataset
+### 🗄️ Dataset
 
-Dataset Source: [MySQL Sakila Sample Database](https://github.com/jOOQ/sakila) 
+Source: [MySQL Sakila Sample Database](https://github.com/jOOQ/sakila) 
 
-Dataset **Size**:
-- **50,000+** rental and payment records
-- Handling **16+ relational tables** representing customers, inventory, films, and stores
+Scale:
+- **50,000+** rental & payment records
+- 16+ relational tables
+- Customers, Films, Inventory, Stores, Rentals
 
 
 ---
 
 
-### 🗄️ SQL Deep-Dive Analysis
+### ⚙️ SQL Deep-Dive Analysis
 
 
 ``` sql
