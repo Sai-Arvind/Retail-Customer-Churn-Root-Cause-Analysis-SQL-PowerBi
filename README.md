@@ -2,7 +2,12 @@
 
 - **Industry:** Rental & Subscription Retail (Netflix DVD Era Simulation)
 
-- "Which of the Top 3 categories Driving 57% of Revenue", **Product Demand** and **Inventory Optimization** using Customer & Store Insights.
+- **Demand** & **Inventory Optimization** using Customer, Product & Store Insight
+- Demand is widely distributed across categories, with the top category contributing only ~7% and even the top 5 categories accounting for just ~35% of total demand, indicating no strong category dominance.
+
+
+
+
 <img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/c8759eac-a1d2-4239-afee-1dc7f47237b2" />
 
 ---
@@ -13,8 +18,6 @@
  - Physical Inventory
  - Customer Loyalty
  - Return Behavior directly impact revenue and availability.
-2. Genres like "X, Y, Z"  account for a massive 57% of revenue, while the Rental Frequency shows a huge bulk of "Regular" and "Elite" users.
-3. If you lost the "x" inventory, the "Elite VIP" tier (people renting 40+ times) would likely collapse.
 
 
 ---
@@ -59,8 +62,8 @@ To build a scalable analytics framework that:
 Source: [MySQL Sakila Sample Database](https://github.com/jOOQ/sakila) 
 
 Scale:
-- **50,000+** rental & payment records
-- 16+ relational tables
+- **32,000+** rental & payment records
+- Across 16+ relational tables
 - Customers, Films, Inventory, Stores, Rentals
 
 
@@ -69,62 +72,232 @@ Scale:
 
 ### ⚙️ SQL Deep-Dive Analysis
 
+### Current Business Health
 
 ``` sql
 
--- 1. Revenue & Business Health
+-- Revenue
+select sum(amount) as revenue from payment;
 
--- Total Revenue & Average order value
-SELECT 
-    SUM(amount) AS total_revenue,
-    AVG(amount) AS avg_order_value 
-FROM payment;
+-- Rentals
+select count(*) as total_rentals from rental;
+
+-- Active Customers
+select count(distinct customer_id) as active_customers from rental;
+
+-- AOV
+select avg(amount) as avg_order_value from payment;
 
 ```
-
-
-``` sql
--- Monthly Revenue Trend
-SELECT 
-    DATE_TRUNC('month', payment_date) AS month,
-    SUM(amount) AS monthly_revenue
-FROM payment
-GROUP BY 1 ORDER BY 1;
-
-
-```
-
+### Demand Analysis Layer
 
 ``` sql
 
+-- Demand by Category
 
--- 2. Customer Segmentation (CLV)
-
--- Identifying the "Whales" (Top 10 Customers)
 SELECT 
-    customer_id, 
-    SUM(amount) AS lifetime_value
-FROM payment
-GROUP BY 1
-ORDER BY lifetime_value DESC
-LIMIT 10;
+    c.name AS category,
+    COUNT(r.rental_id) AS demand,
+    ROUND(
+        100 * COUNT(r.rental_id) / SUM(COUNT(r.rental_id)) OVER (), 
+        2
+    ) AS demand_pct
+FROM rental r
+JOIN inventory i ON r.inventory_id = i.inventory_id
+JOIN film_category fc ON i.film_id = fc.film_id
+JOIN category c ON fc.category_id = c.category_id
+GROUP BY c.name
+ORDER BY demand DESC;
 
-```
 
-``` sql
--- 3. Operational Leakage (Late Returns)
+-- Demand by rating
 
--- Late return = return_date > rental_date + rental_duration
 SELECT 
-    f.title, 
-    COUNT(*) AS late_return_count
+    f.rating,
+    COUNT(r.rental_id) AS demand,
+    ROUND(
+        100 * COUNT(r.rental_id) / SUM(COUNT(r.rental_id)) OVER (), 
+        2
+    ) AS demand_pct
 FROM rental r
 JOIN inventory i ON r.inventory_id = i.inventory_id
 JOIN film f ON i.film_id = f.film_id
-WHERE r.return_date > r.rental_date + INTERVAL f.rental_duration DAY
-GROUP BY 1 ORDER BY 2 DESC;
+GROUP BY f.rating
+ORDER BY demand DESC;
+
+ -- What type of content is preferred (PG, R, etc.)
+
+> Demand is evenly distributed across categories, with no single genre dominating consumption.
+> Additionally, variation across content ratings indicates diverse audience preferences.
+
 
 ```
+
+
+### Inventory Layer
+
+``` sql
+
+-- 1. Title wise Demand vs Inventory Efficiency
+SELECT 
+    f.title,
+    COUNT(r.rental_id) AS demand,
+    COUNT(DISTINCT i.inventory_id) AS inventory,
+    ROUND(
+        COUNT(r.rental_id) / COUNT(DISTINCT i.inventory_id), 
+        2
+    ) AS demand_per_inventory
+FROM film f
+JOIN inventory i ON f.film_id = i.film_id
+LEFT JOIN rental r ON i.inventory_id = r.inventory_id
+GROUP BY f.title
+-- ORDER BY demand_per_inventory DESC
+ORDER BY demand_per_inventory ASC
+LIMIT 10;
+;
+
+-- Inventory utilization varies significantly across titles, with top-performing films achieving ~5 rentals per copy,
+-- While lower-performing titles average around ~2, indicating both understocking of high-demand content and overstocking of low-demand titles.
+
+
+
+Metric → demand_per_inventory
+Comparison → top vs bottom
+Insight → imbalance
+Business meaning → under/overstock
+
+```
+
+
+
+### Customer Layer 
+
+``` SQL
+
+
+-- 1. Customer Activity
+
+SELECT 
+    customer_id,
+    COUNT(rental_id) AS total_rentals
+FROM rental
+GROUP BY customer_id
+ORDER BY total_rentals DESC;
+
+
+-- 2. Customer Segments
+
+SELECT 
+    CASE 
+        WHEN rental_count >= 30 THEN 'High Value'
+        WHEN rental_count BETWEEN 15 AND 29 THEN 'Medium Value'
+        ELSE 'Low Value'
+    END AS customer_segment,
+    COUNT(*) AS customer_count
+FROM (
+    SELECT 
+        customer_id,
+        COUNT(rental_id) AS rental_count
+    FROM rental
+    GROUP BY customer_id
+) t
+GROUP BY customer_segment;
+
+
+
+-- 3. Revenue Contribution via customer 
+
+
+SELECT 
+    c.customer_id,
+    SUM(p.amount) AS total_spent
+FROM customer c
+JOIN rental r ON c.customer_id = r.customer_id
+JOIN payment p ON r.rental_id = p.rental_id
+GROUP BY c.customer_id
+ORDER BY total_spent DESC;
+
+
+```
+
+
+### STORE LAYER
+
+
+``` sql
+
+-- 1. Store wise Performance
+
+SELECT 
+    s.store_id,
+    COUNT(r.rental_id) AS total_rentals,
+    SUM(p.amount) AS revenue
+FROM store s
+JOIN staff st ON s.store_id = st.store_id
+JOIN rental r ON st.staff_id = r.staff_id
+JOIN payment p ON r.rental_id = p.rental_id
+GROUP BY s.store_id;
+
+-- Which store drives more rentals & revenue
+
+
+
+
+-- 2. Store Inventory vs Demand
+
+SELECT 
+    s.store_id,
+    COUNT(r.rental_id) AS demand,
+    COUNT(DISTINCT i.inventory_id) AS inventory,
+    ROUND(
+        COUNT(r.rental_id) / COUNT(DISTINCT i.inventory_id), 
+        2
+    ) AS demand_per_inventory
+FROM store s
+JOIN inventory i ON s.store_id = i.store_id
+LEFT JOIN rental r ON i.inventory_id = r.inventory_id
+GROUP BY s.store_id;
+
+-- Which store is:
+
+-- Efficient (high ratio)
+-- Inefficient (low ratio)
+
+
+
+
+```
+
+
+### Sesonality, Ternds over time, date 
+
+
+``` sql 
+
+-- 1. How does demand/revenue change over time?
+
+-- demand over time 
+SELECT 
+    DATE_FORMAT(r.rental_date, '%Y-%m') AS month,
+    COUNT(*) AS demand
+FROM rental r
+GROUP BY month
+ORDER BY month;
+
+
+-- 2. rev over time 
+
+SELECT 
+    DATE_FORMAT(p.payment_date, '%Y-%m') AS month,
+    SUM(p.amount) AS revenue
+FROM payment p
+GROUP BY month
+ORDER BY month;
+
+
+```
+
+
 
 ---
 
@@ -171,6 +344,21 @@ Active Customers: 599
 Avg Rental Duration: 4.99 Days
 
 Inventory Capacity: 4,581 Units across 1,000 Films
+
+
+---
+
+### ⚡ Business Meaning (this is key)
+❗ No heavy concentration means:
+No single category drives the business
+Customers have diverse preferences
+
+
+
+
+
+
+
 
 ---
 
