@@ -90,6 +90,9 @@ Scale:
 - Across **16+ relational tables**
 - Entities: Customers, Films, Inventory, Stores, payments, Rentals
 
+### ER Diagram
+
+<img width="799" height="521" alt="Sakila - ERD" src="https://github.com/user-attachments/assets/4ffc3c2f-1090-4a1a-88f1-1b94ca97054d" />
 
 ---
 
@@ -334,13 +337,6 @@ ORDER BY month;
 
 
 
----
-
-
-### ER Diagram
-
-<img width="799" height="521" alt="Sakila - ERD" src="https://github.com/user-attachments/assets/4ffc3c2f-1090-4a1a-88f1-1b94ca97054d" />
-
 
 
 ---
@@ -376,6 +372,13 @@ Loyalty_Tier = SWITCH(TRUE(),
 - 📦 Inventory: **4,581 units**
 - 🎬 Films: **~1,000 titles**
 - ⏱ Avg Rental Duration: **~5 days**
+
+---
+
+
+
+<img width="1137" height="613" alt="Inventory Project 2 S S" src="https://github.com/user-attachments/assets/c083cc60-7682-4a46-b8c5-0ad3dd4f9cf9" />
+
 
 ---
 
