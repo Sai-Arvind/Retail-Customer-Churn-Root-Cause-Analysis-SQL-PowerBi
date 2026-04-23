@@ -329,6 +329,7 @@ dvd-rental-churn-analysis/
 │
 ├── Data/
 ├── SQL_Queries/
+|  
 ├── ER_Diagram/
 ├── Visuals/
 ├── PowerBI/
