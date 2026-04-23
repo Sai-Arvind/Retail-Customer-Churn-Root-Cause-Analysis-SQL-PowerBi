@@ -41,7 +41,7 @@ Inventory inefficiency → Poor customer experience → High penalties → Custo
 - Large volume of underperforming DVDs
 - Capital locked in low-demand titles
 
-👉 Result: Poor asset utilization
+👉 *Result: Poor asset utilization*
 
 ---
 
@@ -49,7 +49,7 @@ Inventory inefficiency → Poor customer experience → High penalties → Custo
 - ~55% Late Return Rate
 - Rental durations too short for customer behavior
 
-👉 Result: Customers frequently penalized
+👉 *Result: Customers frequently penalized*
 
 ---
 
@@ -57,7 +57,7 @@ Inventory inefficiency → Poor customer experience → High penalties → Custo
 - High customer inactivity across all segments
 - No significant difference in spend between active & inactive users
 
-👉 Result: System-wide churn driven by poor experience (not customer value)
+👉 *Result: System-wide churn driven by poor experience (not customer value)*
 
 
 ---
@@ -111,7 +111,7 @@ Customer segmentation revealed that:
 - Majority of users are inactive
 - Average spend is nearly identical across segments
 
-👉 This confirms that churn is **system-wide**, not limited to low-value users.
+👉 *This confirms that churn is **system-wide**, not limited to low-value users.*
 
 The primary driver is **operational friction (late return penalties)** rather than customer behavior differences.
 
@@ -461,10 +461,10 @@ Store Revenue Gap: Revenue_Gap = [Store 2 Revenue] - [Store 1 Revenue]
 ### 🔥 Critical Finding
 
 - ~55% of rentals are returned late  
-👉 Indicates a systemic policy failure
+👉 *Indicates a systemic policy failure*
 
 - Customer inactivity is widespread  
-👉 Not a segmentation issue, but a system issue
+👉 *Not a segmentation issue, but a system issue*
 
 
 ---
@@ -535,8 +535,8 @@ With a ~55% Late Return Rate and ~73% churn rate, the data suggests that:
 - **Customers** are **consistently exposed to penalties**
 - **Friction** is embedded into the business model
 
-👉 This confirms that churn is not driven by low-value users or isolated behavior,
-but by a structural mismatch between rental policy and customer usage patterns.
+👉 *This confirms that churn is not driven by low-value users or isolated behavior,
+but by a structural mismatch between rental policy and customer usage patterns.*
 
 > The system is extracting maximum value from its best users… and potentially burning them out.
 
@@ -599,8 +599,10 @@ Reducing the Late Return Rate from ~55% to ~30% is expected to:
 - Reactivate ~80–90 high-value users
 - Generate an estimated $8K–$10K in recovered revenue
 
-👉 This demonstrates that fixing operational friction has a direct and measurable financial impact.
+👉 *This demonstrates that fixing operational friction has a direct and measurable financial impact.*
 
+
+> **A business case with financial justification**
 ---
 
 ## ⚙️ Tech Stack
