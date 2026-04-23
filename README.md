@@ -9,8 +9,9 @@
 
 ### 📌 Project Overview
 
-> Identifying System-Wide Customer Churn in a DVD Rental Business (Descriptive → Predictive)
-> A Data-Driven 360° Root Cause Analysis of Inventory, Operations, and Customer Churn
+> Descriptive to Predictive Analytics
+- Identified System-Wide Customer Churn in a DVD Rental Business.
+- A Data-Driven 360° Root Cause Analysis of Inventory, Operations, and Customer Churn
 
 
 ### ⚡ Executive Summary
@@ -22,18 +23,9 @@
 
 ### 🚩 Business Problem
 
-> Due to Policy & system changes
-> The business is experiencing system-wide customer churn driven by high operational friction (late return policies) and inefficient inventory allocation.
-> Bad Inventory ➝ Leads to Poor Experience ➝ Causes Late Fees ➝ Creates Friction ➝ Drives Customer Churn
-
-
-KPI → Business Problem Mapping
-
-| Business Problem                  | Supporting KPIs                                      |
-|----------------------------------|------------------------------------------------------|
-| Inventory Inefficiency           | Inventory Turnover, Asset ROI, Revenue per Title     |
-| Operational Friction (Late Fees) | Late Return Rate, Avg Rental Delay                   |
-| Customer Churn                   | Recency, Frequency, Monetary, Churn Rate             |
+1. Due to Policy & system changes
+2. The business is experiencing system-wide customer churn driven by high operational friction (late return policies) and inefficient inventory allocation.
+> The below KPI's collectively reveal a failure loop where **inefficient inventory** leads to **poor customer experience**, high **late return penalty**, and ultimately the **churn of customers**.
 
 
 **1. Inventory Problem (Supply Side)**
@@ -53,10 +45,6 @@ KPI → Business Problem Mapping
 - Likely due to repeated bad experiences (late fees)
 
 👉 Result: Revenue loss + declining loyalty
-
-
-
-> These KPIs collectively reveal a failure loop where inefficient inventory leads to poor customer experience, high late return rates, and ultimately the churn of customers.
 
 
 
