@@ -7,7 +7,7 @@
 
 ## 📌 Project Overview
 
-This project analyzes a DVD rental business (Netflix 2006-era + Walmart-style retail model) to identify the root causes of declining performance.
+This project analyzes a DVD rental business **(Netflix 2006-era + Walmart-style retail model)** to identify the root causes of declining performance.
 
 The analysis follows a full analytics lifecycle:
 **Descriptive → Diagnostic → Predictive**
@@ -140,7 +140,7 @@ Scale:
 ``` sql
 
 
--------------------------------------------------------- Auditing
+-------------------------------------------------------- 1. Auditing
 
 > Revenue, Rentals, AOV, Active Customers
 
@@ -162,7 +162,7 @@ select avg(amount) as avg_order_value
 from payment;
 
 
--------------------------------------------------------- Inventory KPIs
+-------------------------------------------------------- 2. Inventory KPIs
 
 > Inventory Turnover, Asset ROI, Revenue per Title, Demand per Copy
 
@@ -218,7 +218,7 @@ GROUP BY f.title
 ORDER BY demand_per_copy DESC;
 
 
--------------------------------------------------------- Operational KPIs
+-------------------------------------------------------- 3. Operational KPIs
 
 > Late Return Rate (LRR), Avg Rental Delay, Revenue per Rental
 -- 5. Late Return Rate (LRR)
@@ -277,7 +277,7 @@ JOIN film f ON i.film_id = f.film_id
 WHERE r.return_date IS NOT NULL;
 
 
--------------------------------------------------------- 👥 3. Customer KPIs (RFM + Churn)
+-------------------------------------------------------- 👥 4. Customer KPIs (RFM + Churn)
 
 > Recency, Frequency,  Monetary (CLV Proxy), Recency Segmentation Query
 
