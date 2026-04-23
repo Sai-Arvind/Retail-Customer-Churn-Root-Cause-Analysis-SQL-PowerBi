@@ -58,24 +58,43 @@ Build a scalable analytics framework to:
 
 
 
-## 📊 Key Metrics & KPI Framework ⭐
+## ⭐ KPI Framework
 
-To evaluate the health of the DVD rental business, the following Key Performance Indicators (KPIs) were defined across Inventory, Operations, and Customer behavior.
+To evaluate Dvd rental business, the following Kpis are defined across Operations, Inventory, and Customer behavior.
 
-| Category   | KPI                     | Measure                                          |           Purpose                                  | 
-|------------|--------------------------|-------------------------------------------------|--------------------------------------------------|
-| Inventory  | Inventory Turnover       | Total Rentals per Film / Total Copies           | Efficiently inventory is utilized                 | 
-| Inventory  | Asset ROI                | Total Revenue per Film / Replacement Cost       | understand profitability of each title             | 
-| Inventory  | Revenue per Title        | Total revenue generated per film                | Identifies high vs low performers                 | 
-| Operations | Late Return Rate (LRR)   | Late Returns / Total Rentals                    |  customer friction due to policies        | 
-| Operations | Avg Rental Delay         | Avg(Return Date - Allowed Date)                 | severity of delays                       | 
-| Operations | Revenue per Rental       | Avg payment per rental                          | Tracks pricing effectiveness                      |
-| Customer   | Recency                  | Days since last rental                          | customer activity                        | 
-| Customer   | Frequency                | Total rentals per customer                      |  engagement level                         | 
-| Customer   | Monetary (CLV Proxy)     | Total spend per customer                        | Identifies high-value customers                   | 
-| Customer   | Churn Rate               | % of inactive customers (>30 days)              | Tracks customer loss                              | 
+### 📊 Auditing 
+
+| KPI                | Measure                           | Purpose |
+|--------------------|-----------------------------------|---------|
+| Total Revenue      | SUM(payment.amount)               | Overall business performance |
+| Total Rentals      | COUNT(rental_id)                 | Tracks business volume |
+| AOV                | AVG(payment.amount)              | Average transaction value |
+| Active Customers   | COUNT(DISTINCT customer_id)      | Measures customer base size |
+
+### ⚙️ Operations 
+
+| KPI                 | Measure                               | Purpose |
+|---------------------|---------------------------------------|---------|
+| Late Return Rate    | Late Returns / Total Rentals          | Measures customer friction from policy |
+| Avg Rental Delay    | AVG(Return Date - Allowed Date)       | Measures severity of delays |
+| Revenue per Rental   | AVG(payment.amount)                   | Tracks pricing effectiveness |
+
+### 📦 Inventory 
+| KPI                 | Measure                                     | Purpose |
+|---------------------|---------------------------------------------|---------|
+| Inventory Turnover  | Total Rentals per Film / Total Copies       | Measures inventory utilization efficiency |
+| Asset ROI           | Total Revenue per Film / Replacement Cost   | Evaluates profitability of each title |
+| Revenue per Title   | SUM(payment.amount) per film                | Identifies high and low performing titles |
 
 
+### 👥 Customer
+
+| KPI                | Measure                          | Purpose |
+|--------------------|----------------------------------|---------|
+| Recency            | Days since last rental           | Measures customer inactivity and churn risk |
+| Frequency          | Total rentals per customer       | Measures engagement and usage intensity |
+| Monetary (CLV)     | Total spend per customer         | Identifies high-value customers |
+| Churn Rate         | % customers inactive > 30 days   | Measures customer loss and retention health |
 
 ---
 
@@ -100,88 +119,10 @@ Scale:
 ``` sql
 
 
--------------------------------------------------------- 1. Auditing
-
-> Revenue, Rentals, AOV, Active Customers
+-------------------------------------------------------- 1. Operational
 
 
--- 1. Revenue
-select sum(amount) as revenue
-from payment;
-
--- 2. Rentals
-select count(*) as total_rentals
-from rental;
-
--- 3. Active Customers
-select count(distinct customer_id) as active_customers
-from rental;
-
--- 4. AOV
-select avg(amount) as avg_order_value
-from payment;
-
-
--------------------------------------------------------- 2. Inventory KPIs
-
-> Inventory Turnover, Asset ROI, Revenue per Title, Demand per Copy
-
--- 1. Inventory Turnover
-SELECT 
-    f.title,
-    COUNT(r.rental_id) AS total_rentals,
-    COUNT(DISTINCT i.inventory_id) AS total_copies,
-    ROUND(COUNT(r.rental_id) / COUNT(DISTINCT i.inventory_id), 2) AS inventory_turnover
-FROM film f
-JOIN inventory i ON f.film_id = i.film_id
-LEFT JOIN rental r ON i.inventory_id = r.inventory_id
-GROUP BY f.title
-ORDER BY inventory_turnover DESC;
-
-
-
-
--- 2. Asset ROI
-SELECT 
-    f.title,
-    f.replacement_cost,
-    SUM(p.amount) AS total_revenue,
-    ROUND(SUM(p.amount) / f.replacement_cost, 2) AS asset_roi
-FROM film f
-JOIN inventory i ON f.film_id = i.film_id
-LEFT JOIN rental r ON i.inventory_id = r.inventory_id
-LEFT JOIN payment p ON r.rental_id = p.rental_id
-GROUP BY f.title, f.replacement_cost
-ORDER BY asset_roi DESC;
-    
--- 3. Revenue per Title
-SELECT 
-    f.title,
-    SUM(p.amount) AS total_revenue
-FROM film f
-JOIN inventory i ON f.film_id = i.film_id
-JOIN rental r ON i.inventory_id = r.inventory_id
-JOIN payment p ON r.rental_id = p.rental_id
-GROUP BY f.title
-ORDER BY total_revenue DESC;
-
--- 4. Demand per Copy
-SELECT 
-    f.title,
-    COUNT(r.rental_id) AS total_rentals,
-    COUNT(DISTINCT i.inventory_id) AS copies,
-    ROUND(COUNT(r.rental_id) / COUNT(DISTINCT i.inventory_id), 2) AS demand_per_copy
-FROM film f
-JOIN inventory i ON f.film_id = i.film_id
-LEFT JOIN rental r ON i.inventory_id = r.inventory_id
-GROUP BY f.title
-ORDER BY demand_per_copy DESC;
-
-
--------------------------------------------------------- 3. Operational KPIs
-
-> Late Return Rate (LRR), Avg Rental Delay, Revenue per Rental
--- 5. Late Return Rate (LRR)
+-- 1. Late Return Rate (LRR)
 SELECT 
     COUNT(*) AS total_returns,
     SUM(
@@ -205,43 +146,39 @@ WHERE r.return_date IS NOT NULL;
 
 
 
--- 6. Avg Rental Delay
+-------------------------------------------------------- 2. Inventory
+
+-- 2. Demand per Copy
 SELECT 
-    ROUND(AVG(
-        DATEDIFF(
-            r.return_date,
-            DATE_ADD(r.rental_date, INTERVAL f.rental_duration DAY)
-        )
-    ), 2) AS avg_delay_days
-FROM rental r
-JOIN inventory i ON r.inventory_id = i.inventory_id
-JOIN film f ON i.film_id = f.film_id
-WHERE r.return_date IS NOT NULL
-AND r.return_date > DATE_ADD(r.rental_date, INTERVAL f.rental_duration DAY);
+    f.title,
+    COUNT(r.rental_id) AS total_rentals,
+    COUNT(DISTINCT i.inventory_id) AS copies,
+    ROUND(COUNT(r.rental_id) / COUNT(DISTINCT i.inventory_id), 2) AS demand_per_copy
+FROM film f
+JOIN inventory i ON f.film_id = i.film_id
+LEFT JOIN rental r ON i.inventory_id = r.inventory_id
+GROUP BY f.title
+ORDER BY demand_per_copy DESC;
 
 
--- 7. Revenue per Rental
+-- 3. Asset ROI
 SELECT 
-    ROUND(AVG(p.amount), 2) AS avg_revenue_per_rental
-FROM payment p;
-
--- 8. Rental Duration Utilization
-SELECT 
-    ROUND(AVG(
-        DATEDIFF(r.return_date, r.rental_date)
-    ), 2) AS avg_actual_days,
-    ROUND(AVG(f.rental_duration), 2) AS avg_allowed_days
-FROM rental r
-JOIN inventory i ON r.inventory_id = i.inventory_id
-JOIN film f ON i.film_id = f.film_id
-WHERE r.return_date IS NOT NULL;
+    f.title,
+    f.replacement_cost,
+    SUM(p.amount) AS total_revenue,
+    ROUND(SUM(p.amount) / f.replacement_cost, 2) AS asset_roi
+FROM film f
+JOIN inventory i ON f.film_id = i.film_id
+LEFT JOIN rental r ON i.inventory_id = r.inventory_id
+LEFT JOIN payment p ON r.rental_id = p.rental_id
+GROUP BY f.title, f.replacement_cost
+ORDER BY asset_roi DESC;
+    
 
 
--------------------------------------------------------- 👥 4. Customer KPIs (RFM + Churn)
+-------------------------------------------------------- 👥 3. Customer 
 
-> Recency, Frequency,  Monetary (CLV Proxy), Recency Segmentation Query
-
--- 9. Recency
+-- 4. Recency
 
 SELECT 
     c.customer_id,
@@ -256,111 +193,16 @@ JOIN payment p
 GROUP BY c.customer_id
 ORDER BY recency_days DESC;
 
--- SELECT MAX(payment_date) FROM payment;
 
+```
 
--- 10. Frequency
-SELECT 
-    customer_id,
-    COUNT(rental_id) AS total_rentals
-FROM rental
-GROUP BY customer_id
-ORDER BY total_rentals DESC;
+## 📊 Additional Insights
 
+```sql
 
--- 11. Monetary (CLV Proxy)
-SELECT 
-    customer_id,
-    SUM(amount) AS total_spent
-FROM payment
-GROUP BY customer_id
-ORDER BY total_spent DESC;
+-------------------------------------------------------- 4. Time trend analysis
 
-
--- 12. Churn (Inactive Customers)
-SET @max_date = (SELECT MAX(payment_date) FROM payment);
-
-SELECT 
-    c.customer_id,
-    MAX(p.payment_date) AS last_activity,
-    DATEDIFF(@max_date, MAX(p.payment_date)) AS days_inactive
-FROM customer c
-JOIN payment p ON c.customer_id = p.customer_id
-GROUP BY c.customer_id
-HAVING days_inactive > 30
-ORDER BY days_inactive DESC;
-
-
-
-
--- 13. Recency Segmentation Query 
-WITH customer_recency AS (
-    SELECT 
-        c.customer_id,
-        SUM(p.amount) AS total_spent,
-        DATEDIFF(
-            (SELECT MAX(payment_date) FROM payment),
-            MAX(p.payment_date)
-        ) AS recency_days
-    FROM customer c
-    JOIN payment p 
-        ON c.customer_id = p.customer_id
-    GROUP BY c.customer_id
-)
-
-SELECT 
-    customer_id,
-    total_spent,
-    recency_days,
-    
-    CASE 
-        WHEN recency_days <= 160 THEN 'Active'
-        WHEN recency_days BETWEEN 161 AND 170 THEN 'At Risk'
-        ELSE 'Inactive'
-    END AS customer_segment
-
-FROM customer_recency
-ORDER BY recency_days DESC;
-
-
-
--- 13. fix cte
-SELECT 
-    customer_segment,
-    COUNT(*) AS customers,
-    ROUND(AVG(total_spent), 2) AS avg_spent
-FROM (
-   WITH customer_recency AS (
-    SELECT 
-        c.customer_id,
-        SUM(p.amount) AS total_spent,
-        DATEDIFF(
-            (SELECT MAX(payment_date) FROM payment),
-            MAX(p.payment_date)
-        ) AS recency_days
-    FROM customer c
-    JOIN payment p 
-        ON c.customer_id = p.customer_id
-    GROUP BY c.customer_id
-)
-
-SELECT 
-    customer_id,
-    total_spent,
-    recency_days,
-    
-    CASE 
-        WHEN recency_days <= 160 THEN 'Active'
-        WHEN recency_days BETWEEN 161 AND 170 THEN 'At Risk'
-        ELSE 'Inactive'
-    END AS customer_segment
-
-FROM customer_recency
-) t
-GROUP BY customer_segment;
-
-
--------------------------------------------------------- 5.Seasonlaity
+-- Month-over-month growth %
 SELECT 
     DATE_FORMAT(payment_date, '%Y-%m') AS month,
     COUNT(*) AS rentals,
@@ -369,11 +211,8 @@ FROM payment
 GROUP BY month
 ORDER BY month;
 
-
-
-
-
 ```
+
 
 
 ---
@@ -429,10 +268,13 @@ Store Revenue Gap: Revenue_Gap = [Store 2 Revenue] - [Store 1 Revenue]
 
 *👉 The system is designed such that the average customer fails.*
 
-
 ## 🔄 Root Cause Loop
 Inventory → Experience → Late Returns → Penalties → Churn
 
+## ⚖️ Trade-off
+
+Penalty Revenue ↓  
+*👉 Retention is long-term growth*
 
 ---
 
@@ -441,16 +283,30 @@ Inventory → Experience → Late Returns → Penalties → Churn
 <img width="1137" height="613" alt="Inventory Project 2 S S" src="https://github.com/user-attachments/assets/c083cc60-7682-4a46-b8c5-0ad3dd4f9cf9" />
 
 
+
+
 ---
 
+## 💡 Business Recommendations
 
-## ⚖️ Trade-off
+### 1. Fix Rental Policy (Top Priority)
+- **Increasing rental duration by 1–2 days** could reduce late return rates (~55%) and improve customer satisfaction.
+- **Reducing penalty** friction will improve customer experience and retention.
 
-Penalty Revenue ↓ vs Retention Revenue ↑  
-*👉 Retention is long-term growth*
+---
 
+### 2. Optimize Inventory
+- Identify and **remove low-ROI titles** (Asset ROI < 1).
+- **Reallocate invest** toward high-demand, high-turnover films.
+
+---
+
+### 3. Recovery Risk customers
+- **Target** inactive customers (>30 days) with re-engagement **campaigns.**
+- **Prioritize experience** improvements over discounts or pricing changes.
 
 --- 
+
 
 ## 📈 Business Impact
 
@@ -461,35 +317,6 @@ Reducing the Late Return Rate from ~55% to ~30% will:
 - Generate an estimated $8K–$10K in recovered revenue
 
 *👉 This demonstrates that fixing operational friction has a direct and measurable financial impact*
-
-
-
----
-## 💡 Business Recommendations
-
-### 1. Fix Rental Policy (Top Priority)
-- Increasing rental duration by 1–2 days could reduce late return rates (~55%) and improve customer satisfaction.
-- Reducing penalty friction will improve customer experience and retention.
-
----
-
-### 2. Optimize Inventory
-- Identify and remove low-ROI titles (Asset ROI < 1).
-- Reallocate invest toward high-demand, high-turnover films.
-
----
-
-### 3. Recovery Risk customers
-- Target inactive customers (>30 days) with re-engagement campaigns.
-- Prioritize experience improvements over discounts or pricing changes.
-
---- 
-
-## 📉 If No Changes made in system
-
-- High-value customers will churn first  
-- Penalty-driven revenue will decline  
-- Inventory ROI will continue to drop  
 
 
 ---
