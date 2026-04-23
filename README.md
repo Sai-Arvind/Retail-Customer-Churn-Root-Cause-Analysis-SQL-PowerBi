@@ -1,63 +1,39 @@
-# DvD Rental Store: 360° Root Cause of Customer Churn & Operational Inefficiency Analysis
+# DvD Rental Store: 360° Root Cause of Customer Churn Analysis
+
 
 <img width="1280" height="720" alt="image" src="https://github.com/user-attachments/assets/c8759eac-a1d2-4239-afee-1dc7f47237b2" />
 
 ---
 
 
+## ⚡ Executive Summary
+- 55% rentals returned late
+- 73% customer churn across all segments
+- **Root cause:** rental policy mismatch
+- Fixing friction can recover ~$8K–$10K revenue
+
+---
+
+
 ## 📌 Project Overview
 
-This project analyzes a DVD rental business **(Netflix 2006-era + Walmart-style retail model)** to identify the root causes of declining performance.
+This project is simulation of DVD rental business **(Netflix 2006-era & Walmart retail)**.
 
-The analysis follows a full analytics lifecycle:
-**Descriptive → Diagnostic → Early-stage Predictive Indicators**
-
-It uncovers a system-wide failure loop across:
-- Inventory (Supply)
-- Operations (Process)
-- Customers (Demand)
-
-The goal is to transform raw transactional data into actionable business insights and strategic recommendations.
-
+Analytics lifecycle:
+**Descriptive, Diagnostic** and Early stage of **Predictive** Indicators are covered.
 
 ---
 
 
 ### 🚩 Business Problem
 
-The business is experiencing **system-wide customer churn** driven by:
+The business is experiencing **system-wide customer churn** 
 
-- High operational friction (late return penalties)
-- Inefficient inventory allocation (dead stock)
-
-These issues create a **failure loop**:
-
-Inventory inefficiency → Poor customer experience → High penalties → Customer churn
-
-
-## 🔍 Key Problems Identified
-
-#### 1. Inventory Problem (Supply Side)
-- Large volume of underperforming DVDs
-- Capital locked in low-demand titles
-
-👉 *Result: Poor asset utilization*
-
----
-
-#### 2. Operational Problem (Process)
-- ~55% Late Return Rate
-- Rental durations too short for customer behavior
-
-👉 *Result: Customers frequently penalized*
-
----
-
-#### 3. Customer Problem (Demand Side)
-- High customer inactivity across all segments
-- No significant difference in spend between active & inactive users
-
-👉 *Result: System-wide churn driven by poor experience (not customer value)*
+| Category   | Problem     |     Question                                                                 |
+|------------|-------------|------------------------------------------------------------------------------|
+| Inventory  | Supply      |    Is inventory aligned with customer demand?                                  |
+| Operations | Process     |    Are rental policies (duration, returns) negatively impacting customers?     |
+| Customer   | Demand      |    Is churn driven by low demand or poor customer experience?                  |
 
 
 ---
@@ -67,7 +43,7 @@ Inventory inefficiency → Poor customer experience → High penalties → Custo
 Build a scalable analytics framework to:
 
 - Audit business performance using KPIs
-- Diagnose root causes of inefficiency
+- Diagnose root causes of operational inefficiency
 - Identify customer churn patterns
 - Provide data-driven business recommendations
 
@@ -100,21 +76,6 @@ To evaluate the health of the DVD rental business, the following Key Performance
 | Customer   | Churn Rate               | % of inactive customers (>30 days)              | Tracks customer loss                              | High churn → Growth problem              |
 
 
----
-
-
-
-## 🔗 Key Insight
-
-Customer segmentation revealed that:
-
-- Majority of users are inactive
-- Average spend is nearly identical across segments
-
-👉 *This confirms that churn is **system-wide**, not limited to low-value users.*
-
-The primary driver is **operational friction (late return penalties)** rather than customer behavior differences.
-
 
 ---
 
@@ -126,7 +87,6 @@ Source: [MySQL Sakila Sample Database](https://github.com/jOOQ/sakila)
 Scale:
 - **32,000+** rental & payment records
 - Across **16+ relational tables**
-- Entities: Content Stragegy, Revenue Engine, Store Performance, market Segmentation
 
 ### ER Diagram
 
@@ -423,7 +383,10 @@ ORDER BY month;
 
 
 ``` Powerbi
-> DAX Measures : Avg Rental Duration, Customer Segmentation, Store Revenue Gap
+
+[Inventory Issues] → [Poor Experience] → [Late Returns] → [Penalties] → [Churn]
+
+> DAX Measures:
 
 ----------------------------------------------------Avg Rental Duration
 
@@ -458,13 +421,17 @@ Store Revenue Gap: Revenue_Gap = [Store 2 Revenue] - [Store 1 Revenue]
 
 ---
 
-### 🔥 Critical Finding
+## 🚨 Critical Finding
 
-- ~55% of rentals are returned late  
-👉 *Indicates a systemic policy failure*
+- 55% Late Return Rate
+- 73% Churn Rate
+- 100% customers experienced late returns
 
-- Customer inactivity is widespread  
-👉 *Not a segmentation issue, but a system issue*
+*👉 The system is designed such that the average customer fails.*
+
+
+## 🔄 Root Cause Loop
+Inventory → Experience → Late Returns → Penalties → Churn
 
 
 ---
@@ -477,26 +444,55 @@ Store Revenue Gap: Revenue_Gap = [Store 2 Revenue] - [Store 1 Revenue]
 ---
 
 
-## 💡 Prescriptive Analysis (Recommendations)
+## ⚖️ Trade-off
+
+Penalty Revenue ↓ vs Retention Revenue ↑  
+*👉 Retention is long-term growth*
+
+
+--- 
+
+## 📈 Business Impact
+
+Reducing the Late Return Rate from ~55% to ~30% will:
+
+- Recover ~15–20% of churned customers
+- Reactivate ~80–90 high-value users
+- Generate an estimated $8K–$10K in recovered revenue
+
+*👉 This demonstrates that fixing operational friction has a direct and measurable financial impact*
+
+
+
+---
+## 💡 Business Recommendations
 
 ### 1. Fix Rental Policy (Top Priority)
 - Increasing rental duration by 1–2 days could reduce late return rates (~55%) and improve customer satisfaction.
-- Reduce penalty-driven friction
+- Reducing penalty friction will improve customer experience and retention.
 
 ---
 
 ### 2. Optimize Inventory
-- Remove underperforming titles (low ROI)
-- Reinvest in high-demand content
+- Identify and remove low-ROI titles (Asset ROI < 1).
+- Reallocate invest toward high-demand, high-turnover films.
 
 ---
 
-### 3. Customer Recovery Strategy
-- Target inactive users with re-engagement offers
-- Focus on improving experience rather than pricing
-  
+### 3. Recovery Risk customers
+- Target inactive customers (>30 days) with re-engagement campaigns.
+- Prioritize experience improvements over discounts or pricing changes.
 
 --- 
+
+## 📉 If No Changes made in system
+
+- High-value customers will churn first  
+- Penalty-driven revenue will decline  
+- Inventory ROI will continue to drop  
+
+
+---
 
 
 ```
@@ -521,88 +517,9 @@ dvd-rental-churn-analysis/
 
 > Logistic Regression
 > Target: churn (inactive > X days)
+> Cohort analysis customers
 
 
-### ⚠️ Critical Finding: Late Behavior is System-Wide
-
-Customer segmentation revealed that 100% of customers have experienced late returns.
-
-This indicates that late behavior is not user-specific, but rather a system-wide outcome driven by operational policies.
-
-With a ~55% Late Return Rate and ~73% churn rate, the data suggests that:
-
-- Late returns are the **default behavior**
-- **Customers** are **consistently exposed to penalties**
-- **Friction** is embedded into the business model
-
-👉 *This confirms that churn is not driven by low-value users or isolated behavior,
-but by a structural mismatch between rental policy and customer usage patterns.*
-
-> The system is extracting maximum value from its best users… and potentially burning them out.
-
-
-``` sql
-
--- cohort comparison: Tag customers
-
-WITH late_users AS (
-    SELECT DISTINCT customer_id
-    FROM rental r
-    JOIN inventory i ON r.inventory_id = i.inventory_id
-    JOIN film f ON i.film_id = f.film_id
-    WHERE r.return_date > DATE_ADD(r.rental_date, INTERVAL f.rental_duration DAY)
-),
-
-customer_activity AS (
-    SELECT 
-        c.customer_id,
-        MAX(p.payment_date) AS last_activity,
-        DATEDIFF((SELECT MAX(payment_date) FROM payment), MAX(p.payment_date)) AS recency
-    FROM customer c
-    JOIN payment p ON c.customer_id = p.customer_id
-    GROUP BY c.customer_id
-)
-
-SELECT 
-    CASE 
-        WHEN l.customer_id IS NOT NULL THEN 'Late Users'
-        ELSE 'On-Time Users'
-    END AS user_type,
-    
-    COUNT(*) AS customers,
-    
-    ROUND(AVG(recency),2) AS avg_recency,
-    
-    ROUND(AVG(CASE WHEN recency > 30 THEN 1 ELSE 0 END)*100,2) AS churn_rate_pct
-
-FROM customer_activity c
-LEFT JOIN late_users l 
-    ON c.customer_id = l.customer_id
-
-GROUP BY user_type;
-
-
--- ~55% Late Return Rate
--- High churn (~73%)
--- No difference between active vs inactive spend
-
-```
-
-
-# Prescriptive Statement
-
-### 📈 Revenue Impact Simulation 
-
-Reducing the Late Return Rate from ~55% to ~30% is expected to:
-
-- Recover ~15–20% of churned customers
-- Reactivate ~80–90 high-value users
-- Generate an estimated $8K–$10K in recovered revenue
-
-👉 *This demonstrates that fixing operational friction has a direct and measurable financial impact.*
-
-
-> **A business case with financial justification**
 ---
 
 ## ⚙️ Tech Stack
