@@ -261,6 +261,13 @@ Store Revenue Gap: Revenue_Gap = [Store 2 Revenue] - [Store 1 Revenue]
 
 ---
 
+
+
+<img width="1137" height="613" alt="Inventory Project 2 S S" src="https://github.com/user-attachments/assets/c083cc60-7682-4a46-b8c5-0ad3dd4f9cf9" />
+
+
+---
+
 ## 🚨 Critical Finding
 
 - 55% Late Return Rate
@@ -272,21 +279,6 @@ Store Revenue Gap: Revenue_Gap = [Store 2 Revenue] - [Store 1 Revenue]
 ## 🔄 Root Cause Loop
 Inventory → Experience → Late Returns → Penalties → Churn
 
-## ⚖️ Trade-off
-
-Penalty Revenue ↓  
-*👉 Retention is long-term growth*
-
----
-
-
-
-<img width="1137" height="613" alt="Inventory Project 2 S S" src="https://github.com/user-attachments/assets/c083cc60-7682-4a46-b8c5-0ad3dd4f9cf9" />
-
-
-
-
----
 
 ## 💡 Business Recommendations
 
