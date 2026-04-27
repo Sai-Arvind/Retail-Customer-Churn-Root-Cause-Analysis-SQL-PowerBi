@@ -21,7 +21,7 @@ Analytics lifecycle:
 - 55% rentals returned late
 - 73% customer churn across all segments
 - **Root cause:** I identified that pricing structure (late penalties & duration) was causing churn (policy friction)
-- Fixing friction can recover ~$8K–$10K revenue
+- Fixing (pricing/ops intersection) friction can recover ~$8K–$10K revenue
 
 ---
 
